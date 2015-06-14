@@ -25,6 +25,7 @@ import logging
 
 from .networking import LifxBulbTCPServer, LifxUDPSocket, get_interface, processMAC
 
+
 __all__ = ['LifxController', 'LifxBulbEmulator', 'LifxBulbBridge']
 
 logger = logging.getLogger(__name__)
@@ -35,9 +36,11 @@ _UDP_BROADCAST_ADDR = ('255.255.255.255', _LIFX_PORT)
 _RECV_BIND_ADDR = ('0.0.0.0', _LIFX_PORT)
 _ONE_SECOND = 10000
 
+
 def _interpolate(min_x, max_x, min_fx, max_fx, x):
     range_x = max_x - min_x
     return min_fx + (max_fx - min_fx)*(x - min_x)/range_x
+
 
 def _smooth_gradient(gradient):
     smoothed_gradient = []
@@ -55,6 +58,7 @@ def _smooth_gradient(gradient):
             smoothed_gradient.append((red, green, blue))
         smoothed_gradient.append(gradient[max_x])
     return smoothed_gradient
+
 
 class LifxBulb(object):
     """
@@ -101,6 +105,7 @@ class LifxBulb(object):
     @property
     def controller(self):
         return self._controller
+
 
 class LifxController(object):
     """
@@ -286,6 +291,7 @@ class LifxController(object):
         # label.
         return LifxBulb(self, addr)
 
+
 class LifxBulbEmulator:
     _properties = {
         'bulbLabel': '\x00' * 32,
@@ -378,6 +384,7 @@ class LifxBulbEmulator:
         with self._prop_lock:
             sock.send_as_bulb('powerState', **self._properties)
             self._udpsock.send_as_bulb('powerState', **self._properties)
+
 
 class LifxBulbBridge(LifxBulbEmulator):
     _reserved_fields = {
