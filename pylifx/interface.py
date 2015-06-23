@@ -281,6 +281,7 @@ class LifxController(object):
         for bulb in self.bulbs:
             if bulb._label == label:
                 return bulb
+
     def bulb_by_addr(self, addr):
         addr = processMAC(addr)
         # if there's an existing bulb entry, re-use it
