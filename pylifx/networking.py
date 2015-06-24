@@ -21,11 +21,13 @@ from .packet import encode, decode
 from re import match
 from thread import start_new_thread
 from netifaces import ifaddresses, interfaces
+from bitstring import ReadError
 
 
 _RECV_BUFFER_SIZE = 1024
 _LIFX_PROTO_TOBULB = 13312
 _LIFX_PROTO_ASBULB = 21504
+_LIFX_BROADCAST_PORT = 56700
 _BLANK_MAC = '00:00:00:00:00:00'
 _MAC_ADDR_FORMAT = '([A-Fa-f0-9]{2})[:\-]?([A-Fa-f0-9]{2})[:\-]?([A-Fa-f0-9]{2})[:\-]?([A-Fa-f0-9]{2})[:\-]?([A-Fa-f0-9]{2})[:\-]?([A-Fa-f0-9]{2})'
 _AVAILABLE_INTERFACES = {}
@@ -51,6 +53,40 @@ def get_interface(intf_name):
         return _AVAILABLE_INTERFACES.itervalues().next()
     else:
         return _AVAILABLE_INTERFACES[intf_name]
+
+
+def find_master_bulb(broadcast_address):
+    try:
+        broadcast_socket = socket(AF_INET, SOCK_DGRAM)
+        broadcast_socket.settimeout(3)
+        broadcast_socket.bind(('', _LFIX_BROADCAST_PORT))
+
+        sock = socket(AF_INET, SOCK_DGRAM)
+        sock.setsockopt(SOL_SOCKET, SO_REUSEADDR, 1)
+        sock.setsockopt(SOL_SOCKET, SO_BROADCAST, 1)
+
+        sock.sendto(
+            encode(
+                'getPanGateway',
+                protocol=_LIFX_PROTO_TOBULB,
+                bulb_addr=processMAC(_BLANK_MAC),
+                site_addr=processMAC(_BLANK_MAC),
+            ).bytes,
+            (broadcast_address, _LIFX_BROADCAST_PORT)
+        )
+
+        while True:
+            data = broadcast_socket.recvfrom(41)
+            try:
+                lifx_data = decode(data[0])
+                if lifx_data[0] == 'panGateway':
+                    return {'site_addr': lifx_data[1]['site_addr'], 'ip': data[1][0]}
+            except ReadError:
+                # Unable to decode message means something else replied
+                pass
+    finally:
+        broadcast_socket.close()
+        sock.close()
 
 
 def processMAC(mac):

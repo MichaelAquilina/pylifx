@@ -469,7 +469,7 @@ def _processForRead(payload_name, payload_spec):
     return {
         'name': payload_name,
         'format': type_format,
-        'fields': fields, 
+        'fields': fields,
     }
 
 for name, values in _PAYLOADS.items():
