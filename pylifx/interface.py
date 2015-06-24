@@ -192,7 +192,7 @@ class LifxController(object):
 
         """
         k = self._annotate_bulb_addr(bulb_addr)
-        logger.info('Setting colour of %s to (H:%f, S:%f, B:%f) over %d seconds', (self._name if bulb_addr is None else k['bulb_addr'], hue, saturation, brightness, fadeTime)
+        logger.info('Setting colour of %s to (H:%f, S:%f, B:%f) over %d seconds', (self._name if bulb_addr is None else k['bulb_addr'], hue, saturation, brightness, fadeTime))
         self._set_colour(hue, saturation, brightness, 0, fadeTime, **k)
 
     def set_temperature(self, kelvin, fadeTime = 1, bulb_addr=None):
@@ -205,7 +205,7 @@ class LifxController(object):
 
         """
         k = self._annotate_bulb_addr(bulb_addr)
-        logger.info('Setting colour temperature of %s to (%dK) over %d seconds', (self._name if bulb_addr is None else k['bulb_addr'], kelvin, fadeTime)
+        logger.info('Setting colour temperature of %s to (%dK) over %d seconds', (self._name if bulb_addr is None else k['bulb_addr'], kelvin, fadeTime))
         self._set_colour(0, 0, 1.0, kelvin, fadeTime, **k)
 
     def run_scene(self, gradient, bulb_addr=None):
